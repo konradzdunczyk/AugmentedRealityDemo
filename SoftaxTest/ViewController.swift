@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     
     var avSession: AVCaptureSession!
     var previewView: UIView!
+    var lblMessage: UILabel!
     var arManager: ARManager!
     var infiniteScrollView: InfiniteScrollView!
 
@@ -46,12 +47,20 @@ class ViewController: UIViewController {
         arManager.addLocation(location_three)
         arManager.addLocation(location_four)
         arManager.addLocation(location_five)
+        
+        locationManager.startUpdatingHeading()
+        
+        if let avSession = avSession {
+            avSession.startRunning()
+        }
     }
     
     override func viewDidDisappear(animated: Bool) {
         super.viewDidDisappear(animated)
         
-        avSession.stopRunning()
+        if let avSession = avSession {
+            avSession.stopRunning()
+        }
         locationManager.stopUpdatingLocation()
         locationManager.stopUpdatingHeading()
     }
@@ -88,11 +97,43 @@ class ViewController: UIViewController {
         view.addSubview(previewView)
         view.addSubview(infiniteScrollView)
         
-        locationManager.delegate = arManager
-        
-        if let avSession = avSession {
-            avSession.startRunning()
+        setupLocationManager()
+        setupMessageLabel()
+        setupMotionManager()
+    }
+    
+    private func setupMotionManager() {
+        if motionManager.deviceMotionAvailable {
+            motionManager.deviceMotionUpdateInterval = 1.0 / 60.0
+            let queue = NSOperationQueue.mainQueue()
+            motionManager.startDeviceMotionUpdatesToQueue(queue, withHandler: { (motion: CMDeviceMotion?, error: NSError?) -> Void in
+                if (error == nil) {
+                    if let motion = motion {
+                        let x = motion.gravity.x
+                        let z = motion.gravity.z
+                        
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            if fabs(x) > 0.45 {
+                                self.lblMessage.hidden = false
+                                self.infiniteScrollView.hidden = true
+                                self.lblMessage.text = "You lose precision when phone is tilted"
+                            } else if fabs(z) > 0.50 {
+                                self.lblMessage.hidden = false
+                                self.infiniteScrollView.hidden = true
+                                self.lblMessage.text = "There's nothing there. Try to look straight"
+                            } else {
+                                self.lblMessage.hidden = true
+                                self.infiniteScrollView.hidden = false
+                            }
+                        })
+                    }
+                }
+            })
         }
+    }
+    
+    private func setupLocationManager() {
+        locationManager.delegate = arManager
         
         if CLLocationManager.authorizationStatus() == .NotDetermined {
             locationManager.requestWhenInUseAuthorization()
@@ -106,6 +147,17 @@ class ViewController: UIViewController {
         default:
             break
         }
+    }
+    
+    private func setupMessageLabel() {
+        lblMessage = UILabel(frame: CGRect(x: 0, y: 0, width: previewView.frame.width, height: previewView.frame.height / 3))
+        lblMessage.center.y = previewView.center.y
+        lblMessage.font = UIFont.boldSystemFontOfSize(40)
+        lblMessage.numberOfLines = 0
+        lblMessage.textAlignment = .Center
+        lblMessage.backgroundColor = UIColor.grayColor()
+        lblMessage.hidden = true
+        previewView.addSubview(lblMessage)
     }
 
     private func setupCameraPreviewWithPreview(preview: UIView, andDevice device: AVCaptureDevice) -> AVCaptureSession? {
