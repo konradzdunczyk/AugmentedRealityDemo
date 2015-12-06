@@ -56,14 +56,31 @@ extension ARManager: InfiniteScrollViewDelegate {
         
         if let lastUserLocation = lastUserLocation {
             for location in locations {
-                let azimuth = getAzimuthBetweenUserLocation(lastUserLocation.coordinate, andLocation: location.coordinate)
-                let azimuthDegree = radiansToDegree(azimuth)
-                let locationPoint = UIView(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+                let azimuthRadians = getAzimuthBetweenUserLocation(lastUserLocation.coordinate, andLocation: location.coordinate)
+                let azimuthDegree = radiansToDegree(azimuthRadians)
+                let distance = lastUserLocation.distanceFromLocation(location)
+                let locationPoint = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 25))
                 locationPoint.center.x = CGFloat(azimuthDegree * pointsPerDegree)
                 locationPoint.center.y = CGRectGetMidY(frame)
                 locationPoint.backgroundColor = UIColor.blackColor()
                 
+                let distanceStr: String
+                
+                if distance > 100 {
+                    distanceStr = String(format: "%.2lf km", distance / 1000.0)
+                } else {
+                    distanceStr = String(format: "%.2lf m", distance)
+                }
+                
+                let label = UILabel(frame: CGRect(x: 0, y: CGRectGetMaxY(locationPoint.frame), width: 80, height: 30))
+                label.text = distanceStr
+                label.textColor = UIColor.whiteColor()
+                label.backgroundColor = UIColor.blackColor()
+                label.center.x = locationPoint.center.x
+                label.numberOfLines = 1
+                
                 view.addSubview(locationPoint)
+                view.addSubview(label)
             }
         }
         

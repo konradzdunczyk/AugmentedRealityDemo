@@ -9,9 +9,11 @@
 import UIKit
 import AVFoundation
 import CoreLocation
+import CoreMotion
 
 class ViewController: UIViewController {
     let locationManager = CLLocationManager()
+    let motionManager = CMMotionManager()
     
     var avSession: AVCaptureSession!
     var previewView: UIView!
@@ -29,35 +31,9 @@ class ViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
-        avSession = setupCameraPreviewWithPreview(previewView, andDevice: device)
-        
-        infiniteScrollView = InfiniteScrollView(frame: previewView.frame, cameraFieldOfView: Double(device.activeFormat.videoFieldOfView))
-        arManager = ARManager(infiniteScrollView: infiniteScrollView)
-        
-        view.addSubview(previewView)
-        view.addSubview(infiniteScrollView)
-        
-        locationManager.delegate = arManager
-        
-        if let avSession = avSession {
-            avSession.startRunning()
-        }
-        
         locationManager.startUpdatingHeading()
         
-        if CLLocationManager.authorizationStatus() == .NotDetermined {
-            locationManager.requestWhenInUseAuthorization()
-        }
-        
-        switch CLLocationManager.authorizationStatus() {
-        case .NotDetermined:
-            locationManager.requestWhenInUseAuthorization()
-        case .Restricted, .Denied:
-            showAlertAboutNoPermissionForGps()
-        default:
-            break
-        }
+        setup()
 
         let location_one = CLLocation(latitude: 52.24047435, longitude: 21.08225673)
         let location_two = CLLocation(latitude: 52.258830, longitude: 19.380461)
@@ -99,6 +75,37 @@ class ViewController: UIViewController {
     
     private func showAlertAboutNoPermissionForGps() {
         showAlertWithTitle("Cannot use GPS", andMessage: "This app is not authorized to use GPS")
+    }
+    
+    // MARK: - setup functions
+    private func setup() {
+        let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+        avSession = setupCameraPreviewWithPreview(previewView, andDevice: device)
+        
+        infiniteScrollView = InfiniteScrollView(frame: previewView.frame, cameraFieldOfView: Double(device.activeFormat.videoFieldOfView))
+        arManager = ARManager(infiniteScrollView: infiniteScrollView)
+        
+        view.addSubview(previewView)
+        view.addSubview(infiniteScrollView)
+        
+        locationManager.delegate = arManager
+        
+        if let avSession = avSession {
+            avSession.startRunning()
+        }
+        
+        if CLLocationManager.authorizationStatus() == .NotDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        }
+        
+        switch CLLocationManager.authorizationStatus() {
+        case .NotDetermined:
+            locationManager.requestWhenInUseAuthorization()
+        case .Restricted, .Denied:
+            showAlertAboutNoPermissionForGps()
+        default:
+            break
+        }
     }
 
     private func setupCameraPreviewWithPreview(preview: UIView, andDevice device: AVCaptureDevice) -> AVCaptureSession? {

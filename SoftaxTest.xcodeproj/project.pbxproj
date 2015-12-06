@@ -26,6 +26,8 @@
 		17426AA01C146CDC00F2412F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		17426AA61C146D4400F2412F /* ARManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARManager.swift; sourceTree = "<group>"; };
 		17426AA81C146EB100F2412F /* InfiniteScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfiniteScrollView.swift; sourceTree = "<group>"; };
+		17F0812C1C14A5B4008602FA /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
+		17F0812D1C14A5B4008602FA /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,7 +113,6 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
 			);
 			mainGroup = 17426A881C146CDC00F2412F;
@@ -156,6 +157,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				17426A991C146CDC00F2412F /* Base */,
+				17F0812C1C14A5B4008602FA /* en */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -164,6 +166,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				17426A9E1C146CDC00F2412F /* Base */,
+				17F0812D1C14A5B4008602FA /* en */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
