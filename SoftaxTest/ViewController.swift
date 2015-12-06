@@ -83,7 +83,7 @@ class ViewController: UIViewController {
     }
     
     private func showAlertAboutNoPermissionForGps() {
-        showAlertWithTitle("Cannot use GPS", andMessage: "This app is not authorized to use GPS")
+        showAlertWithTitle(NSLocalizedString("Cannot use GPS", comment: ""), andMessage: NSLocalizedString("This app is not authorized to use GPS", comment: ""))
     }
     
     // MARK: - setup functions
@@ -116,11 +116,11 @@ class ViewController: UIViewController {
                             if fabs(x) > 0.45 {
                                 self.lblMessage.hidden = false
                                 self.infiniteScrollView.hidden = true
-                                self.lblMessage.text = "You lose precision when phone is tilted"
+                                self.lblMessage.text = NSLocalizedString("You lose precision when phone is tilted", comment: "")
                             } else if fabs(z) > 0.50 {
                                 self.lblMessage.hidden = false
                                 self.infiniteScrollView.hidden = true
-                                self.lblMessage.text = "There's nothing there. Try to look straight"
+                                self.lblMessage.text = NSLocalizedString("There's nothing there. Try to look straight", comment: "")
                             } else {
                                 self.lblMessage.hidden = true
                                 self.infiniteScrollView.hidden = false
