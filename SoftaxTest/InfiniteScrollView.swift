@@ -8,11 +8,18 @@
 
 import UIKit
 
+protocol InfiniteScrollViewDelegate {
+    func arViewForWithFrame(frame: CGRect, andPointsPerDegree pointsPerDegree: Double) -> UIView
+    func shouldInfiniteScrollDisplayCompasLine() -> Bool
+}
+
 class InfiniteScrollView: UIScrollView {
     private var containerView: UIView!
     private var visibleViews = [UIView]()
     private var lastDegree: Double = 0
     private var cameraFoV: Double = 0
+    
+    var iSDelegate: InfiniteScrollViewDelegate?
     
     var pointsPerDegree: Double {
         if (cameraFoV <= 0) {
@@ -82,6 +89,17 @@ class InfiniteScrollView: UIScrollView {
         setContentOffset(newContentOffset, animated: false)
     }
     
+    func refreshViews() {
+        for (index, view) in visibleViews.enumerate() {
+            if let newView = insertView() {
+                newView.frame = view.frame
+                view.removeFromSuperview()
+                self.addSubview(newView)
+                visibleViews[index] = newView
+            }
+        }
+    }
+    
     // MARK: - views managment
     private func recenterIfNecessary() {
         let currentOffset = contentOffset
@@ -100,29 +118,39 @@ class InfiniteScrollView: UIScrollView {
         }
     }
     
-    private func insertView() -> UIView {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: CGFloat(360 * pointsPerDegree), height: self.frame.height))
-        view.backgroundColor = UIColor.clearColor()
+    private func insertView() -> UIView? {
+        let viewFrame = CGRect(x: 0, y: 0, width: CGFloat(360 * pointsPerDegree), height: self.frame.height)
         
-        for i in 0..<36 {
-            let line = UIView(frame: CGRect(x: Double(i * 10) * pointsPerDegree, y: 0, width: 1, height: 10))
-            line.backgroundColor = UIColor.blackColor()
-            let label = UILabel(frame: CGRect(x: line.frame.origin.x, y: CGRectGetMaxY(line.frame), width: 50, height: 20))
-            label.textAlignment = .Left
-            label.text = "\(i * 10)°"
-            label.textColor = UIColor.blackColor()
+        if let view = iSDelegate?.arViewForWithFrame(viewFrame, andPointsPerDegree: pointsPerDegree) {
+            view.backgroundColor = UIColor.clearColor()
             
-            view.addSubview(line)
-            view.addSubview(label)
+            if let delegate = iSDelegate where delegate.shouldInfiniteScrollDisplayCompasLine() {
+                for i in 0..<36 {
+                    let line = UIView(frame: CGRect(x: Double(i * 10) * pointsPerDegree, y: 0, width: 1, height: 10))
+                    line.backgroundColor = UIColor.blackColor()
+                    let label = UILabel(frame: CGRect(x: line.frame.origin.x, y: CGRectGetMaxY(line.frame), width: 50, height: 20))
+                    label.textAlignment = .Left
+                    label.text = "\(i * 10)°"
+                    label.textColor = UIColor.blackColor()
+                    
+                    view.addSubview(line)
+                    view.addSubview(label)
+                }
+            }
+            
+            containerView.addSubview(view)
+            
+            return view
         }
         
-        containerView.addSubview(view)
-        
-        return view
+        return nil
     }
     
     private func placeNewViewOnRight(rightEdge: CGFloat) -> CGFloat {
-        let view = insertView()
+        guard let view = insertView() else {
+            return -1
+        }
+        
         visibleViews.append(view)
         
         var viewFrame = view.frame
@@ -134,7 +162,10 @@ class InfiniteScrollView: UIScrollView {
     }
     
     private func placeNewViewOnLeft(leftEdge: CGFloat) -> CGFloat {
-        let view = insertView()
+        guard let view = insertView() else {
+            return -1
+        }
+        
         visibleViews.insert(view, atIndex: 0)
         
         var viewFrame = view.frame
@@ -147,7 +178,9 @@ class InfiniteScrollView: UIScrollView {
     
     private func tileViewsFromMinX(minX: CGFloat, toMaxX maxX: CGFloat) {
         if visibleViews.count == 0 {
-            placeNewViewOnRight(minX + (maxX - minX) / 2)
+            if placeNewViewOnRight(minX + (maxX - minX) / 2) == -1 {
+                return
+            }
         }
         
         var rightEdge: CGFloat = 0

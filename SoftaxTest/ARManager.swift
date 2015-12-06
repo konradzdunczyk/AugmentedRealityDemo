@@ -12,11 +12,66 @@ import CoreLocation
 
 class ARManager: NSObject {
     private var infiniteScrollView: InfiniteScrollView
+    private var locations = [CLLocation]()
+    private var lastUserLocation: CLLocation?
     
     init(infiniteScrollView: InfiniteScrollView) {
         self.infiniteScrollView = infiniteScrollView
         
         super.init()
+        
+        self.infiniteScrollView.iSDelegate = self
+    }
+    
+    func addLocation(location: CLLocation) {
+        locations.append(location)
+        
+        infiniteScrollView.refreshViews()
+    }
+    
+    private func getAzimuthBetweenUserLocation(firstLocation: CLLocationCoordinate2D, andLocation secondLocation: CLLocationCoordinate2D) -> Double {
+        let longitudeDifference: Double = secondLocation.longitude - firstLocation.longitude;
+        let latitudeDifference: Double = secondLocation.latitude  - firstLocation.latitude;
+        let possibleAzimuth: Double = (M_PI * 0.5) - atan(latitudeDifference / longitudeDifference);
+        
+        if (longitudeDifference > 0) {
+            return possibleAzimuth;
+        } else if (longitudeDifference < 0) {
+            return possibleAzimuth + M_PI;
+        } else if (latitudeDifference < 0) {
+            return M_PI;
+        }
+        
+        return 0.0;
+    }
+    
+    private func radiansToDegree(radians: Double) -> Double {
+        return radians * (180.0 / M_PI)
+    }
+}
+
+extension ARManager: InfiniteScrollViewDelegate {
+    func arViewForWithFrame(frame: CGRect, andPointsPerDegree pointsPerDegree: Double) -> UIView {
+        let view = UIView(frame: frame)
+        
+        if let lastUserLocation = lastUserLocation {
+            for location in locations {
+                let azimuth = getAzimuthBetweenUserLocation(lastUserLocation.coordinate, andLocation: location.coordinate)
+                let azimuthDegree = radiansToDegree(azimuth)
+                let locationPoint = UIView(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+                locationPoint.center.x = CGFloat(azimuthDegree * pointsPerDegree)
+                locationPoint.center.y = CGRectGetMidY(frame)
+                locationPoint.backgroundColor = UIColor.blackColor()
+                
+                view.addSubview(locationPoint)
+            }
+        }
+        
+        return view
+    }
+    
+    func shouldInfiniteScrollDisplayCompasLine() -> Bool {
+        return true
     }
 }
 
@@ -29,6 +84,11 @@ extension ARManager: CLLocationManagerDelegate {
         })
     }
     
+    func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
+        lastUserLocation = newLocation
+        infiniteScrollView.refreshViews()
+    }
+    
     func locationManagerShouldDisplayHeadingCalibration(manager: CLLocationManager) -> Bool {
         if let heading = manager.heading {
             return heading.headingAccuracy < 0 || heading.headingAccuracy > 5
@@ -36,4 +96,12 @@ extension ARManager: CLLocationManagerDelegate {
             return true
         }
     }
+    
+    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus)
+    {
+        if status == .AuthorizedAlways || status == .AuthorizedWhenInUse {
+            manager.startUpdatingLocation()
+        }
+    }
+
 }

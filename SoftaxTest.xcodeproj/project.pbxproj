@@ -295,6 +295,7 @@
 				17426AA51C146CDC00F2412F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
