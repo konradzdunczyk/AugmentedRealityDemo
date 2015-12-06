@@ -32,8 +32,6 @@ class ViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        locationManager.startUpdatingHeading()
-        
         setup()
         
         let location_one = CLLocation(latitude: 52.24047435, longitude: 21.08225673)
