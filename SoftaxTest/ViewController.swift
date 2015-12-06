@@ -35,12 +35,12 @@ class ViewController: UIViewController {
         locationManager.startUpdatingHeading()
         
         setup()
-
+        
         let location_one = CLLocation(latitude: 52.24047435, longitude: 21.08225673)
         let location_two = CLLocation(latitude: 52.258830, longitude: 19.380461)
-        let location_three = CLLocation(latitude: 51.937416, longitude: 21.997115)
-        let location_four = CLLocation(latitude: 53.008583, longitude: 20.873048)
-        let location_five = CLLocation(latitude: 51.396003, longitude: 21.148603)
+        let location_three = CLLocation(latitude: 51.771381, longitude: 22.630652)
+        let location_four = CLLocation(latitude: 53.541212, longitude: 20.721804)
+        let location_five = CLLocation(latitude: 50.548096, longitude: 21.171050)
         
         arManager.addLocation(location_one)
         arManager.addLocation(location_two)

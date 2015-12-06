@@ -72,10 +72,11 @@ extension ARManager: InfiniteScrollViewDelegate {
                     distanceStr = String(format: "%.2lf m", distance)
                 }
                 
-                let label = UILabel(frame: CGRect(x: 0, y: CGRectGetMaxY(locationPoint.frame), width: 80, height: 30))
+                let label = UILabel(frame: CGRect(x: 0, y: CGRectGetMaxY(locationPoint.frame), width: 100, height: 30))
                 label.text = distanceStr
                 label.textColor = UIColor.whiteColor()
                 label.backgroundColor = UIColor.blackColor()
+                label.textAlignment = .Center
                 label.center.x = locationPoint.center.x
                 label.numberOfLines = 1
                 
