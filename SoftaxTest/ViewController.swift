@@ -24,6 +24,10 @@ class ViewController: UIViewController {
         view.backgroundColor = UIColor.blackColor()
         
         previewView = makePreviewViewWithPoint(CGPoint(x: 0, y: 0), andWidth: view.frame.width)
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
         
         let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
         avSession = setupCameraPreviewWithPreview(previewView, andDevice: device)
@@ -35,16 +39,24 @@ class ViewController: UIViewController {
         view.addSubview(infiniteScrollView)
         
         locationManager.delegate = arManager
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
         
-        avSession.startRunning()
+        if let avSession = avSession {
+            avSession.startRunning()
+        }
+        
         locationManager.startUpdatingHeading()
         
         if CLLocationManager.authorizationStatus() == .NotDetermined {
             locationManager.requestWhenInUseAuthorization()
+        }
+        
+        switch CLLocationManager.authorizationStatus() {
+        case .NotDetermined:
+            locationManager.requestWhenInUseAuthorization()
+        case .Restricted, .Denied:
+            showAlertAboutNoPermissionForGps()
+        default:
+            break
         }
 
         let location_one = CLLocation(latitude: 52.24047435, longitude: 21.08225673)
@@ -76,8 +88,20 @@ class ViewController: UIViewController {
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
+    
+    private func showAlertWithTitle(title: String, andMessage msg: String) {
+        let alertController = UIAlertController(title: title, message: msg, preferredStyle: UIAlertControllerStyle.Alert)
+        let okAlertAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil)
+        alertController.addAction(okAlertAction)
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+    
+    private func showAlertAboutNoPermissionForGps() {
+        showAlertWithTitle("Cannot use GPS", andMessage: "This app is not authorized to use GPS")
+    }
 
-    private func setupCameraPreviewWithPreview(preview: UIView, andDevice device: AVCaptureDevice) -> AVCaptureSession {
+    private func setupCameraPreviewWithPreview(preview: UIView, andDevice device: AVCaptureDevice) -> AVCaptureSession? {
         let avSession = AVCaptureSession()
         avSession.sessionPreset = AVCaptureSessionPresetMedium
         
@@ -85,11 +109,18 @@ class ViewController: UIViewController {
         captureVideoPreviewLayer.frame = preview.bounds
         preview.layer.addSublayer(captureVideoPreviewLayer)
         
-        let input = try! AVCaptureDeviceInput(device: device)
+        do {
+            let input = try AVCaptureDeviceInput(device: device)
+            avSession.addInput(input)
+            return avSession
+        } catch let error as NSError {
+            let title = error.userInfo["NSLocalizedDescription"] as! String
+            let msg = error.userInfo["NSLocalizedFailureReason"] as! String
+            
+            showAlertWithTitle(title, andMessage: msg)
+        }
         
-        avSession.addInput(input)
-        
-        return avSession
+        return nil
     }
     
     private func makePreviewViewWithPoint(point: CGPoint, andWidth width: CGFloat) -> UIView {
