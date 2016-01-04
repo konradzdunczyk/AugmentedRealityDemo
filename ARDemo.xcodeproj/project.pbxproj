@@ -17,7 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		17426A911C146CDC00F2412F /* SoftaxTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoftaxTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		17426A911C146CDC00F2412F /* ARDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ARDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		17426A941C146CDC00F2412F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		17426A961C146CDC00F2412F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		17426A991C146CDC00F2412F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -44,7 +44,7 @@
 		17426A881C146CDC00F2412F = {
 			isa = PBXGroup;
 			children = (
-				17426A931C146CDC00F2412F /* SoftaxTest */,
+				17426A931C146CDC00F2412F /* ARDemo */,
 				17426A921C146CDC00F2412F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -52,12 +52,12 @@
 		17426A921C146CDC00F2412F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				17426A911C146CDC00F2412F /* SoftaxTest.app */,
+				17426A911C146CDC00F2412F /* ARDemo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		17426A931C146CDC00F2412F /* SoftaxTest */ = {
+		17426A931C146CDC00F2412F /* ARDemo */ = {
 			isa = PBXGroup;
 			children = (
 				17426A941C146CDC00F2412F /* AppDelegate.swift */,
@@ -69,15 +69,15 @@
 				17426A9D1C146CDC00F2412F /* LaunchScreen.storyboard */,
 				17426AA01C146CDC00F2412F /* Info.plist */,
 			);
-			path = SoftaxTest;
+			path = ARDemo;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		17426A901C146CDC00F2412F /* SoftaxTest */ = {
+		17426A901C146CDC00F2412F /* ARDemo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 17426AA31C146CDC00F2412F /* Build configuration list for PBXNativeTarget "SoftaxTest" */;
+			buildConfigurationList = 17426AA31C146CDC00F2412F /* Build configuration list for PBXNativeTarget "ARDemo" */;
 			buildPhases = (
 				17426A8D1C146CDC00F2412F /* Sources */,
 				17426A8E1C146CDC00F2412F /* Frameworks */,
@@ -87,9 +87,9 @@
 			);
 			dependencies = (
 			);
-			name = SoftaxTest;
-			productName = SoftaxTest;
-			productReference = 17426A911C146CDC00F2412F /* SoftaxTest.app */;
+			name = ARDemo;
+			productName = ARDemo;
+			productReference = 17426A911C146CDC00F2412F /* ARDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -108,7 +108,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 17426A8C1C146CDC00F2412F /* Build configuration list for PBXProject "SoftaxTest" */;
+			buildConfigurationList = 17426A8C1C146CDC00F2412F /* Build configuration list for PBXProject "ARDemo" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -120,7 +120,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				17426A901C146CDC00F2412F /* SoftaxTest */,
+				17426A901C146CDC00F2412F /* ARDemo */,
 			);
 		};
 /* End PBXProject section */
@@ -259,10 +259,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = SoftaxTest/Info.plist;
+				INFOPLIST_FILE = ARDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.KonradZdunczyk.SoftaxTest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.KonradZdunczyk.ARDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -271,10 +271,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = SoftaxTest/Info.plist;
+				INFOPLIST_FILE = ARDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.KonradZdunczyk.SoftaxTest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.KonradZdunczyk.ARDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -282,7 +282,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		17426A8C1C146CDC00F2412F /* Build configuration list for PBXProject "SoftaxTest" */ = {
+		17426A8C1C146CDC00F2412F /* Build configuration list for PBXProject "ARDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17426AA11C146CDC00F2412F /* Debug */,
@@ -291,7 +291,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		17426AA31C146CDC00F2412F /* Build configuration list for PBXNativeTarget "SoftaxTest" */ = {
+		17426AA31C146CDC00F2412F /* Build configuration list for PBXNativeTarget "ARDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				17426AA41C146CDC00F2412F /* Debug */,

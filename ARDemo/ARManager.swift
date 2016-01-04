@@ -1,6 +1,6 @@
 //
 //  ARManager.swift
-//  SoftaxTest
+//  ARDemo
 //
 //  Created by Konrad Zdunczyk on 06/12/15.
 //  Copyright © 2015 Konrad Zdunczyk. All rights reserved.
