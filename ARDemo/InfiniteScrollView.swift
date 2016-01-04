@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol InfiniteScrollViewDelegate {
+protocol InfiniteScrollViewDelegate: class {
     func arViewForWithFrame(frame: CGRect, andPointsPerDegree pointsPerDegree: Double) -> UIView
     func shouldInfiniteScrollDisplayCompasLine() -> Bool
 }
@@ -19,7 +19,7 @@ class InfiniteScrollView: UIScrollView {
     private var lastDegree: Double = 0
     private var cameraFoV: Double = 0
     
-    var iSDelegate: InfiniteScrollViewDelegate?
+    weak var iSDelegate: InfiniteScrollViewDelegate?
     
     var pointsPerDegree: Double {
         if (cameraFoV <= 0) {
