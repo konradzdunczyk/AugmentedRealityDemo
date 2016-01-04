@@ -33,19 +33,28 @@ class ViewController: UIViewController {
         super.viewDidAppear(animated)
         
         setup()
-        
-        let location_one = CLLocation(latitude: 52.24047435, longitude: 21.08225673)
-        let location_two = CLLocation(latitude: 52.258830, longitude: 19.380461)
-        let location_three = CLLocation(latitude: 51.771381, longitude: 22.630652)
-        let location_four = CLLocation(latitude: 53.541212, longitude: 20.721804)
-        let location_five = CLLocation(latitude: 50.548096, longitude: 21.171050)
+
+        // Cracow Old Town, Poland
+        let location_one = CLLocation(latitude: 50.0611958, longitude: 19.9379069)
+
+        // Leaning Tower of Pisa, Italy
+        let location_two = CLLocation(latitude: 43.722952, longitude: 10.3944083)
+
+        // Acropolis of Athens, Greek
+        let location_three = CLLocation(latitude: 37.971421, longitude: 23.726166)
+
+        // Eiffel Tower, French
+        let location_four = CLLocation(latitude: 48.858222, longitude: 2.2945)
+
+        // Big Ben, UK
+        let location_five = CLLocation(latitude: 51.5007292, longitude: -0.1268124)
         
         arManager.addLocation(location_one)
         arManager.addLocation(location_two)
         arManager.addLocation(location_three)
         arManager.addLocation(location_four)
         arManager.addLocation(location_five)
-        
+
         locationManager.startUpdatingHeading()
         
         if let avSession = avSession {
