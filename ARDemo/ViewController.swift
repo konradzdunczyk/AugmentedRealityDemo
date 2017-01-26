@@ -24,12 +24,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor.blackColor()
+        view.backgroundColor = UIColor.black
         
         previewView = makePreviewViewWithPoint(CGPoint(x: 0, y: 0), andWidth: view.frame.width)
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         setup()
@@ -62,7 +62,7 @@ class ViewController: UIViewController {
         }
     }
     
-    override func viewDidDisappear(animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
         if let avSession = avSession {
@@ -77,28 +77,28 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden: Bool {
         return true
     }
     
-    private func showAlertWithTitle(title: String, andMessage msg: String) {
-        let alertController = UIAlertController(title: title, message: msg, preferredStyle: UIAlertControllerStyle.Alert)
-        let okAlertAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil)
+    fileprivate func showAlertWithTitle(_ title: String, andMessage msg: String) {
+        let alertController = UIAlertController(title: title, message: msg, preferredStyle: UIAlertControllerStyle.alert)
+        let okAlertAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil)
         alertController.addAction(okAlertAction)
         
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
     
-    private func showAlertAboutNoPermissionForGps() {
+    fileprivate func showAlertAboutNoPermissionForGps() {
         showAlertWithTitle(NSLocalizedString("Cannot use GPS", comment: ""), andMessage: NSLocalizedString("This app is not authorized to use GPS", comment: ""))
     }
     
     // MARK: - setup functions
-    private func setup() {
-        let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
-        avSession = setupCameraPreviewWithPreview(previewView, andDevice: device)
+    fileprivate func setup() {
+        let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        avSession = setupCameraPreviewWithPreview(previewView, andDevice: device!)
         
-        infiniteScrollView = InfiniteScrollView(frame: previewView.frame, cameraFieldOfView: Double(device.activeFormat.videoFieldOfView))
+        infiniteScrollView = InfiniteScrollView(frame: previewView.frame, cameraFieldOfView: Double((device?.activeFormat.videoFieldOfView)!))
         arManager = ARManager(infiniteScrollView: infiniteScrollView)
         
         view.addSubview(previewView)
@@ -109,71 +109,71 @@ class ViewController: UIViewController {
         setupMotionManager()
     }
     
-    private func setupMotionManager() {
-        if motionManager.deviceMotionAvailable {
+    fileprivate func setupMotionManager() {
+        if motionManager.isDeviceMotionAvailable {
             motionManager.deviceMotionUpdateInterval = 1.0 / 60.0
-            let queue = NSOperationQueue.mainQueue()
-            motionManager.startDeviceMotionUpdatesToQueue(queue, withHandler: { (motion: CMDeviceMotion?, error: NSError?) -> Void in
+            let queue = OperationQueue.main
+            motionManager.startDeviceMotionUpdates(to: queue, withHandler: { (motion, error) in
                 if (error == nil) {
                     if let motion = motion {
                         let x = motion.gravity.x
                         let z = motion.gravity.z
-                        
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+
+                        DispatchQueue.main.async { () -> Void in
                             if fabs(x) > 0.45 {
-                                self.lblMessage.hidden = false
-                                self.infiniteScrollView.hidden = true
+                                self.lblMessage.isHidden = false
+                                self.infiniteScrollView.isHidden = true
                                 self.lblMessage.text = NSLocalizedString("You lose precision when phone is tilted", comment: "")
                             } else if fabs(z) > 0.50 {
-                                self.lblMessage.hidden = false
-                                self.infiniteScrollView.hidden = true
+                                self.lblMessage.isHidden = false
+                                self.infiniteScrollView.isHidden = true
                                 self.lblMessage.text = NSLocalizedString("There's nothing there. Try to look straight", comment: "")
                             } else {
-                                self.lblMessage.hidden = true
-                                self.infiniteScrollView.hidden = false
+                                self.lblMessage.isHidden = true
+                                self.infiniteScrollView.isHidden = false
                             }
-                        })
+                        }
                     }
                 }
             })
         }
     }
     
-    private func setupLocationManager() {
+    fileprivate func setupLocationManager() {
         locationManager.delegate = arManager
         
-        if CLLocationManager.authorizationStatus() == .NotDetermined {
+        if CLLocationManager.authorizationStatus() == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
         }
         
         switch CLLocationManager.authorizationStatus() {
-        case .NotDetermined:
+        case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
-        case .Restricted, .Denied:
+        case .restricted, .denied:
             showAlertAboutNoPermissionForGps()
         default:
             break
         }
     }
     
-    private func setupMessageLabel() {
+    fileprivate func setupMessageLabel() {
         lblMessage = UILabel(frame: CGRect(x: 0, y: 0, width: previewView.frame.width, height: previewView.frame.height / 3))
         lblMessage.center.y = previewView.center.y
-        lblMessage.font = UIFont.boldSystemFontOfSize(40)
+        lblMessage.font = UIFont.boldSystemFont(ofSize: 40)
         lblMessage.numberOfLines = 0
-        lblMessage.textAlignment = .Center
-        lblMessage.backgroundColor = UIColor.grayColor()
-        lblMessage.hidden = true
+        lblMessage.textAlignment = .center
+        lblMessage.backgroundColor = UIColor.gray
+        lblMessage.isHidden = true
         previewView.addSubview(lblMessage)
     }
 
-    private func setupCameraPreviewWithPreview(preview: UIView, andDevice device: AVCaptureDevice) -> AVCaptureSession? {
+    fileprivate func setupCameraPreviewWithPreview(_ preview: UIView, andDevice device: AVCaptureDevice) -> AVCaptureSession? {
         let avSession = AVCaptureSession()
         avSession.sessionPreset = AVCaptureSessionPresetMedium
         
         let captureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: avSession)
-        captureVideoPreviewLayer.frame = preview.bounds
-        preview.layer.addSublayer(captureVideoPreviewLayer)
+        captureVideoPreviewLayer?.frame = preview.bounds
+        preview.layer.addSublayer(captureVideoPreviewLayer!)
         
         do {
             let input = try AVCaptureDeviceInput(device: device)
@@ -189,11 +189,11 @@ class ViewController: UIViewController {
         return nil
     }
     
-    private func makePreviewViewWithPoint(point: CGPoint, andWidth width: CGFloat) -> UIView {
+    fileprivate func makePreviewViewWithPoint(_ point: CGPoint, andWidth width: CGFloat) -> UIView {
         let previewViewHeight = (width * 4.0) / 3.0
         let previewView = UIView(frame: CGRect(origin: point, size: CGSize(width: width, height: previewViewHeight)))
         
-        previewView.backgroundColor = UIColor.blackColor()
+        previewView.backgroundColor = UIColor.black
         
         return previewView
     }

@@ -9,15 +9,15 @@
 import UIKit
 
 protocol InfiniteScrollViewDelegate: class {
-    func arViewForWithFrame(frame: CGRect, andPointsPerDegree pointsPerDegree: Double) -> UIView
+    func arViewForWithFrame(_ frame: CGRect, andPointsPerDegree pointsPerDegree: Double) -> UIView
     func shouldInfiniteScrollDisplayCompasLine() -> Bool
 }
 
 class InfiniteScrollView: UIScrollView {
-    private var containerView: UIView!
-    private var visibleViews = [UIView]()
-    private var lastDegree: Double = 0
-    private var cameraFoV: Double = 0
+    fileprivate var containerView: UIView!
+    fileprivate var visibleViews = [UIView]()
+    fileprivate var lastDegree: Double = 0
+    fileprivate var cameraFoV: Double = 0
     
     weak var iSDelegate: InfiniteScrollViewDelegate?
     
@@ -29,8 +29,8 @@ class InfiniteScrollView: UIScrollView {
         return Double(self.frame.width) / cameraFoV
     }
     
-    private init() {
-        super.init(frame: CGRectZero)
+    fileprivate init() {
+        super.init(frame: CGRect.zero)
     }
     
     init(frame: CGRect, cameraFieldOfView cameraFoV: Double) {
@@ -48,20 +48,20 @@ class InfiniteScrollView: UIScrollView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func scrollViewSetup() {
+    fileprivate func scrollViewSetup() {
         contentSize = CGSize(width: 4000, height: frame.size.height)
-        backgroundColor = UIColor.clearColor()
-        userInteractionEnabled = false
+        backgroundColor = UIColor.clear
+        isUserInteractionEnabled = false
         showsHorizontalScrollIndicator = true
         showsVerticalScrollIndicator = true
     }
     
-    private func createContainerViewWithFrame(containerViewFrame: CGRect) -> UIView {
+    fileprivate func createContainerViewWithFrame(_ containerViewFrame: CGRect) -> UIView {
         let containerView = UIView()
         
         containerView.frame = containerViewFrame
-        containerView.backgroundColor = UIColor.clearColor()
-        containerView.userInteractionEnabled = false
+        containerView.backgroundColor = UIColor.clear
+        containerView.isUserInteractionEnabled = false
         
         return containerView
     }
@@ -71,14 +71,14 @@ class InfiniteScrollView: UIScrollView {
         
         recenterIfNecessary()
         
-        let visibleBounds = convertRect(bounds, toView: containerView)
-        let minimumVisibleX = CGRectGetMinX(visibleBounds)
-        let maximumVisibleX = CGRectGetMaxX(visibleBounds)
+        let visibleBounds = convert(bounds, to: containerView)
+        let minimumVisibleX = visibleBounds.minX
+        let maximumVisibleX = visibleBounds.maxX
         
         tileViewsFromMinX(minimumVisibleX, toMaxX: maximumVisibleX)
     }
     
-    func setContentOffsetForDegree(degree: Double) {
+    func setContentOffsetForDegree(_ degree: Double) {
         var tX = degree - lastDegree
         tX *= pointsPerDegree
         
@@ -90,7 +90,7 @@ class InfiniteScrollView: UIScrollView {
     }
     
     func refreshViews() {
-        for (index, view) in visibleViews.enumerate() {
+        for (index, view) in visibleViews.enumerated() {
             if let newView = insertView() {
                 newView.frame = view.frame
                 view.removeFromSuperview()
@@ -101,7 +101,7 @@ class InfiniteScrollView: UIScrollView {
     }
     
     // MARK: - views managment
-    private func recenterIfNecessary() {
+    fileprivate func recenterIfNecessary() {
         let currentOffset = contentOffset
         let contentWidth = contentSize.width
         let centerOffsetX = (contentWidth - bounds.size.width) / 2.0
@@ -111,27 +111,27 @@ class InfiniteScrollView: UIScrollView {
             contentOffset = CGPoint(x: centerOffsetX, y: currentOffset.y)
             
             for view in visibleViews {
-                var newCenter = containerView.convertPoint(view.center, toView: self)
+                var newCenter = containerView.convert(view.center, to: self)
                 newCenter.x += (centerOffsetX - currentOffset.x)
-                view.center = convertPoint(newCenter, toView: containerView)
+                view.center = convert(newCenter, to: containerView)
             }
         }
     }
     
-    private func insertView() -> UIView? {
+    fileprivate func insertView() -> UIView? {
         let viewFrame = CGRect(x: 0, y: 0, width: CGFloat(360 * pointsPerDegree), height: self.frame.height)
         
         if let view = iSDelegate?.arViewForWithFrame(viewFrame, andPointsPerDegree: pointsPerDegree) {
-            view.backgroundColor = UIColor.clearColor()
+            view.backgroundColor = UIColor.clear
             
-            if let delegate = iSDelegate where delegate.shouldInfiniteScrollDisplayCompasLine() {
+            if let delegate = iSDelegate, delegate.shouldInfiniteScrollDisplayCompasLine() {
                 for i in 0..<36 {
                     let line = UIView(frame: CGRect(x: Double(i * 10) * pointsPerDegree, y: 0, width: 1, height: 10))
-                    line.backgroundColor = UIColor.blackColor()
-                    let label = UILabel(frame: CGRect(x: line.frame.origin.x, y: CGRectGetMaxY(line.frame), width: 50, height: 20))
-                    label.textAlignment = .Left
+                    line.backgroundColor = UIColor.black
+                    let label = UILabel(frame: CGRect(x: line.frame.origin.x, y: line.frame.maxY, width: 50, height: 20))
+                    label.textAlignment = .left
                     label.text = "\(i * 10)°"
-                    label.textColor = UIColor.blackColor()
+                    label.textColor = UIColor.black
                     
                     view.addSubview(line)
                     view.addSubview(label)
@@ -146,7 +146,7 @@ class InfiniteScrollView: UIScrollView {
         return nil
     }
     
-    private func placeNewViewOnRight(rightEdge: CGFloat) -> CGFloat {
+    fileprivate func placeNewViewOnRight(_ rightEdge: CGFloat) -> CGFloat {
         guard let view = insertView() else {
             return -1
         }
@@ -158,25 +158,25 @@ class InfiniteScrollView: UIScrollView {
         viewFrame.origin.y = 0
         view.frame = viewFrame
         
-        return CGRectGetMaxX(viewFrame)
+        return viewFrame.maxX
     }
     
-    private func placeNewViewOnLeft(leftEdge: CGFloat) -> CGFloat {
+    fileprivate func placeNewViewOnLeft(_ leftEdge: CGFloat) -> CGFloat {
         guard let view = insertView() else {
             return -1
         }
         
-        visibleViews.insert(view, atIndex: 0)
+        visibleViews.insert(view, at: 0)
         
         var viewFrame = view.frame
         viewFrame.origin.x = leftEdge - viewFrame.size.width
         viewFrame.origin.y = 0
         view.frame = viewFrame
         
-        return CGRectGetMinX(viewFrame)
+        return viewFrame.minX
     }
     
-    private func tileViewsFromMinX(minX: CGFloat, toMaxX maxX: CGFloat) {
+    fileprivate func tileViewsFromMinX(_ minX: CGFloat, toMaxX maxX: CGFloat) {
         if visibleViews.count == 0 {
             if placeNewViewOnRight(minX + (maxX - minX) / 2) == -1 {
                 return
@@ -185,7 +185,7 @@ class InfiniteScrollView: UIScrollView {
         
         var rightEdge: CGFloat = 0
         if let lastView = visibleViews.last {
-            rightEdge = CGRectGetMaxX(lastView.frame)
+            rightEdge = lastView.frame.maxX
             
             while rightEdge < maxX {
                 rightEdge = placeNewViewOnRight(rightEdge)
@@ -194,7 +194,7 @@ class InfiniteScrollView: UIScrollView {
         
         var leftEdge: CGFloat = 0
         if let firstView = visibleViews.first {
-            leftEdge = CGRectGetMinX(firstView.frame)
+            leftEdge = firstView.frame.minX
             
             while leftEdge > minX {
                 leftEdge = placeNewViewOnLeft(leftEdge)
@@ -209,7 +209,7 @@ class InfiniteScrollView: UIScrollView {
         }
         
         var firstView = visibleViews.first
-        while firstView != nil && CGRectGetMaxX(firstView!.frame) < minX {
+        while firstView != nil && firstView!.frame.maxX < minX {
             firstView!.removeFromSuperview()
             visibleViews.removeFirst()
             firstView = visibleViews.first

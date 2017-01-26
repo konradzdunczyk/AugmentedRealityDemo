@@ -11,9 +11,9 @@ import CoreMotion
 import CoreLocation
 
 class ARManager: NSObject {
-    private var infiniteScrollView: InfiniteScrollView
-    private var locations = [CLLocation]()
-    private var lastUserLocation: CLLocation?
+    fileprivate var infiniteScrollView: InfiniteScrollView
+    fileprivate var locations = [CLLocation]()
+    fileprivate var lastUserLocation: CLLocation?
     
     init(infiniteScrollView: InfiniteScrollView) {
         self.infiniteScrollView = infiniteScrollView
@@ -23,13 +23,13 @@ class ARManager: NSObject {
         self.infiniteScrollView.iSDelegate = self
     }
     
-    func addLocation(location: CLLocation) {
+    func addLocation(_ location: CLLocation) {
         locations.append(location)
         
         infiniteScrollView.refreshViews()
     }
     
-    private func getAzimuthBetweenUserLocation(firstLocation: CLLocationCoordinate2D, andLocation secondLocation: CLLocationCoordinate2D) -> Double {
+    fileprivate func getAzimuthBetweenUserLocation(_ firstLocation: CLLocationCoordinate2D, andLocation secondLocation: CLLocationCoordinate2D) -> Double {
         let longitudeDifference: Double = secondLocation.longitude - firstLocation.longitude;
         let latitudeDifference: Double = secondLocation.latitude  - firstLocation.latitude;
         let possibleAzimuth: Double = (M_PI * 0.5) - atan(latitudeDifference / longitudeDifference);
@@ -45,24 +45,24 @@ class ARManager: NSObject {
         return 0.0;
     }
     
-    private func radiansToDegree(radians: Double) -> Double {
+    fileprivate func radiansToDegree(_ radians: Double) -> Double {
         return radians * (180.0 / M_PI)
     }
 }
 
 extension ARManager: InfiniteScrollViewDelegate {
-    func arViewForWithFrame(frame: CGRect, andPointsPerDegree pointsPerDegree: Double) -> UIView {
+    func arViewForWithFrame(_ frame: CGRect, andPointsPerDegree pointsPerDegree: Double) -> UIView {
         let view = UIView(frame: frame)
         
         if let lastUserLocation = lastUserLocation {
             for location in locations {
                 let azimuthRadians = getAzimuthBetweenUserLocation(lastUserLocation.coordinate, andLocation: location.coordinate)
                 let azimuthDegree = radiansToDegree(azimuthRadians)
-                let distance = lastUserLocation.distanceFromLocation(location)
+                let distance = lastUserLocation.distance(from: location)
                 let locationPoint = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 25))
                 locationPoint.center.x = CGFloat(azimuthDegree * pointsPerDegree)
-                locationPoint.center.y = CGRectGetMidY(frame)
-                locationPoint.backgroundColor = UIColor.blackColor()
+                locationPoint.center.y = frame.midY
+                locationPoint.backgroundColor = UIColor.black
                 
                 let distanceStr: String
                 
@@ -72,11 +72,11 @@ extension ARManager: InfiniteScrollViewDelegate {
                     distanceStr = String(format: "%.2lf m", distance)
                 }
                 
-                let label = UILabel(frame: CGRect(x: 0, y: CGRectGetMaxY(locationPoint.frame), width: 100, height: 30))
+                let label = UILabel(frame: CGRect(x: 0, y: locationPoint.frame.maxY, width: 100, height: 30))
                 label.text = distanceStr
-                label.textColor = UIColor.whiteColor()
-                label.backgroundColor = UIColor.blackColor()
-                label.textAlignment = .Center
+                label.textColor = UIColor.white
+                label.backgroundColor = UIColor.black
+                label.textAlignment = .center
                 label.center.x = locationPoint.center.x
                 label.numberOfLines = 1
                 
@@ -94,20 +94,20 @@ extension ARManager: InfiniteScrollViewDelegate {
 }
 
 extension ARManager: CLLocationManagerDelegate {
-    func locationManager(manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         let magneticHeading: CLLocationDirection = newHeading.magneticHeading
         
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+        DispatchQueue.main.async { () -> Void in
             self.infiniteScrollView.setContentOffsetForDegree(magneticHeading)
-        })
+        }
     }
-    
-    func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
-        lastUserLocation = newLocation
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        lastUserLocation = locations.last
         infiniteScrollView.refreshViews()
     }
-    
-    func locationManagerShouldDisplayHeadingCalibration(manager: CLLocationManager) -> Bool {
+
+    func locationManagerShouldDisplayHeadingCalibration(_ manager: CLLocationManager) -> Bool {
         if let heading = manager.heading {
             return heading.headingAccuracy < 0 || heading.headingAccuracy > 5
         } else {
@@ -115,9 +115,9 @@ extension ARManager: CLLocationManagerDelegate {
         }
     }
     
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus)
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus)
     {
-        if status == .AuthorizedAlways || status == .AuthorizedWhenInUse {
+        if status == .authorizedAlways || status == .authorizedWhenInUse {
             manager.startUpdatingLocation()
         }
     }
